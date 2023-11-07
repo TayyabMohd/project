@@ -1,34 +1,45 @@
+// artgalleryRoutes.js
+
 const express = require("express");
 const router = express.Router();
-const Artist = require("../schema/ArtGallerySchema"); // Adjust the import path
+const Artist = require("../schema/ArtGallerySchema");
 
 // Route to create a new artist
-router.post("/create-artist", async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    const artist = new Artist({ name, email, password });
-    await artist.save();
-    res.status(200).json({ message: "Artist added successfully" });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while creating the artist" });
-  }
+router.post("/create-artist", (req, res, next) => {
+  Artist.create(req.body)
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+
+router.get("/", (req, res, next) => {
+  Artist.find() // No longer accepts a callback
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 // Route for artist login
-router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const artist = await Artist.findOne({ email, password });
+router.post("/login", (req, res) => {
+  const { name, email, password } = req.body;
+  Artist.findOne({ email: email }).then((artist) => {
     if (artist) {
-      res.status(200).json({ message: "Login successful" });
+      // database password === given password
+      if (artist.password === password) {
+        res.json("login successful");
+      } else {
+        res.json("Password incorrect");
+      }
     } else {
-      res.status(401).json({ error: "Invalid email or password" });
+      console.log("No record exists");
     }
-  } catch (error) {
-    res.status(500).json({ error: "An error occurred during login" });
-  }
+  });
 });
 
 module.exports = router;

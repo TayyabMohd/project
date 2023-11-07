@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 mongoose.set("strictQuery", true);
 mongoose.connect(
-  "mongodb+srv://mohd12tayyab:mohd12tayyab@cluster0.v3iqy06.mongodb.net/School"
+  "mongodb+srv://mohd12tayyab:mohd12tayyab@cluster0.v3iqy06.mongodb.net/Artgallery"
 );
 
 const db = mongoose.connection;
